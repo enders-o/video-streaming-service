@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  upload-webapp:
+    image:
+  authentication:
+    image:
+  database:
+    image:
+
