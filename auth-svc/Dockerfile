@@ -1,22 +1,16 @@
-FROM node:14
+FROM python:3.9-slim
 
+# Set the working directory
 WORKDIR /app
 
-# Copy package.json and install dependencies
-COPY package*.json auth-service.js ./
-RUN npm install
+# Copy the application code
+COPY auth-svc.py .
 
-# Copy the template and shell script to the container
-COPY nginx.conf /etc/nginx/nginx.conf
-COPY start-nginx.sh /start-nginx.sh
-COPY .env /etc/nginx/.env
+# Install Flask
+RUN pip install Flask
 
-# Make sure the script is executable
-RUN chmod +x /start-nginx.sh
+# Expose the port that the app runs on
+EXPOSE 8000
 
-# Expose port 8080 for the authentication service
-EXPOSE 8080
-
-# Start the authentication service
-CMD ["/start-nginx.sh"]
-CMD ["node", "auth-service.js"]
+# Command to run the application
+CMD ["python", "auth-svc.py"]
