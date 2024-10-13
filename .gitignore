@@ -1,3 +1,2 @@
-credentials.env
-upload-webapp/.env
-upload-webapp/node_modules
+*.env
+node_modules
