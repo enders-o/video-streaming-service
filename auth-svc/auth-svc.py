@@ -1,10 +1,13 @@
 from flask import Flask, request, jsonify
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 app = Flask(__name__)
 
-# Hardcoded credentials
-USERNAME = "user123"
-PASSWORD = "pass123"
+USERNAME = os.getenv("AUTH_USERNAME")
+PASSWORD = os.getenv("AUTH_PASSWORD")
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -18,4 +21,4 @@ def login():
         return jsonify({"message": "Invalid credentials"}), 401
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000)
+    app.run(host='localhost', port=8000)
