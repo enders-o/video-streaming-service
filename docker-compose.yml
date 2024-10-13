@@ -2,9 +2,24 @@ version: '3'
 
 services:
   upload-webapp:
-    image:
-  authentication:
-    image:
-  database:
-    image:
+    build:
+      context: ./upload-webapp
+    ports:
+      - "3000:3000"
+    depends_on:
+      - auth-svc
+    networks:
+      - bridge-net
+  auth-svc:
+    build:
+      context: ./auth-svc
+    ports:
+      - "8000:8000"
+    networks:
+      - bridge-net
+  # database:
+  #   image:
 
+networks:
+  bridge-net:
+    driver: bridge
