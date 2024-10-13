@@ -17,8 +17,22 @@ services:
       - "8000:8000"
     networks:
       - bridge-net
-  # database:
-  #   image:
+  database:
+    image: mariadb:10.5
+    container_name: mariadb_container
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: video_db
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - ./mariadb_data:/var/lib/mysql
+      - ./database:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+    networks: 
+      - bridge-net
+
 
 networks:
   bridge-net:
