@@ -29,7 +29,13 @@ services:
       - myapp-temp:/usr/src/app/temp
     networks:
       - bridge-net
-  
+  streaming-svc:
+    build:
+      context: ./streaming-webapp
+    ports:
+      - "3100:3100"
+    networks:
+      - bridge-net
   database:
     image: mariadb:10.5
     container_name: mariadb_container
