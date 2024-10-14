@@ -25,6 +25,8 @@ services:
       context: ./file-svc
     ports:
       - "4000:4000"
+    volumes:
+      - ./temp:/usr/src/app/temp
     networks:
       - bridge-net
   database:
