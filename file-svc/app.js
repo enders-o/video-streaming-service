@@ -5,7 +5,6 @@ app.use(express.json());
 
 const AWS = require("aws-sdk")
 require('dotenv').config();
-console.log(process.env.S3_BUCKET)
 AWS.config.update({ region: process.env.S3_REGION })
 const s3 = new AWS.S3({ apiVersion: '2006-03-01' })
 
@@ -15,6 +14,10 @@ app.post('/api/upload', (req, res) => {
     console.log(req.body.filePath)
     fs.readFile(req.body.filePath, (err, data) => {
         // Display the file content
+        if (err) {
+            console.error('Error reading file:', err);
+            return res.status(500).send('Error reading file');
+        }
         console.log(data);
         uploadParams.Key = req.body.fileName;
         uploadParams.Body = data;
@@ -30,6 +33,7 @@ app.post('/api/upload', (req, res) => {
             });
         });
     });
+    res.status(200).send('File uploaded and deleted successfully');
 });
 
 app.listen(4000, () => console.log('server ready'))
