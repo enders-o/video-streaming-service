@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   upload-webapp:
     build:
@@ -10,9 +8,10 @@ services:
       - auth-svc
       - file-svc
     volumes:
-      - ./temp:/usr/src/app/temp
+      - myapp-temp:/usr/src/app/temp
     networks:
       - bridge-net
+  
   auth-svc:
     build:
       context: ./auth-svc
@@ -20,15 +19,17 @@ services:
       - "8000:8000"
     networks:
       - bridge-net
+  
   file-svc:
     build:
       context: ./file-svc
     ports:
       - "4000:4000"
     volumes:
-      - ./temp:/usr/src/app/temp
+      - myapp-temp:/usr/src/app/temp
     networks:
       - bridge-net
+  
   database:
     image: mariadb:10.5
     container_name: mariadb_container
@@ -38,14 +39,21 @@ services:
       MYSQL_USER: user 
       MYSQL_PASSWORD: password 
     volumes:
-      - ./mariadb_data:/var/lib/mysql
-      - ./database:/docker-entrypoint-initdb.d
+      - db-data:/var/lib/mysql
+      - db-init:/docker-entrypoint-initdb.d
     ports:
       - "3306:3306"
     networks: 
       - bridge-net
 
-
 networks:
   bridge-net:
     driver: bridge
+
+volumes:
+  myapp-temp:
+    external: false
+  db-data:
+    external: false
+  db-init:
+    external: false
