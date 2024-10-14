@@ -6,9 +6,15 @@ const app = express()
 require('dotenv').config();
 AWS.config.update({ region: process.env.S3_REGION })
 const s3 = new AWS.S3({ apiVersion: '2006-03-01' })
-const upload = multer({
-  storage: multer.memoryStorage(),
-});
+const storage = multer.diskStorage({
+  destination: function (req, file, callback) {
+    callback(null, 'temp/');
+  },
+  filename: function (req, file, callback) {
+    callback(null, file.originalname); 
+  }
+})
+const upload = multer({ storage: storage });
 //const fetch = require("node-fetch"); 
 
 var uploadParams = { Bucket: process.env.S3_BUCKET, Key: "", Body: "" };
@@ -68,6 +74,14 @@ app.get('/', (req, res) => {
 });
 
 app.post('/api/upload', upload.single('file'), (req, res) => {
+    try {
+        res.send('Succesfully uploaded');
+        console.log(req.file.originalname);
+        //res.send(req.file);
+    }catch(err) {
+        res.send(400);
+    }
+    /*
     uploadParams.Key = req.file.originalname;
     uploadParams.Body = req.file.buffer;
     s3.upload(uploadParams, (err,data) => {
@@ -77,6 +91,7 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
         }
         res.send('Succesfully uploaded')
     });
+    */
 });
 
 app.listen(3000, () => console.log('server ready'))
