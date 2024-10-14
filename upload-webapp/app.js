@@ -77,21 +77,14 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
     try {
         res.send('Succesfully uploaded');
         console.log(req.file.originalname);
-        //res.send(req.file);
+        const response = fetch("http://file-svc:4000/api/upload", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ filePath: 'temp/'+req.file.originalname }),
+        });
     }catch(err) {
         res.send(400);
     }
-    /*
-    uploadParams.Key = req.file.originalname;
-    uploadParams.Body = req.file.buffer;
-    s3.upload(uploadParams, (err,data) => {
-        if(err) {
-            console.log(err);
-            return res.status(500).send('Error uploading file');
-        }
-        res.send('Succesfully uploaded')
-    });
-    */
 });
 
 app.listen(3000, () => console.log('server ready'))

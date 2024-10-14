@@ -8,6 +8,9 @@ services:
       - "3000:3000"
     depends_on:
       - auth-svc
+      - file-svc
+    volumes:
+      - ./temp:/usr/src/app/temp
     networks:
       - bridge-net
   auth-svc:
@@ -17,14 +20,21 @@ services:
       - "8000:8000"
     networks:
       - bridge-net
+  file-svc:
+    build:
+      context: ./file-svc
+    ports:
+      - "4000:4000"
+    networks:
+      - bridge-net
   database:
     image: mariadb:10.5
     container_name: mariadb_container
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD: password 
       MYSQL_DATABASE: video_db
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_USER: user 
+      MYSQL_PASSWORD: password 
     volumes:
       - ./mariadb_data:/var/lib/mysql
       - ./database:/docker-entrypoint-initdb.d
