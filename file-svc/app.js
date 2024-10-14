@@ -19,6 +19,7 @@ app.post('/api/upload', (req, res) => {
             return res.status(500).send('Error reading file');
         }
         console.log(data);
+        console.log(uploadParams);
         uploadParams.Key = req.body.fileName;
         uploadParams.Body = data;
         s3.upload(uploadParams, (err,data) => {
