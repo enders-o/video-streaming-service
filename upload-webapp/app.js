@@ -1,11 +1,7 @@
 const express = require("express")
-const AWS = require("aws-sdk")
 const multer = require('multer')
-const fs = require('fs')
 const app = express()
-require('dotenv').config();
-AWS.config.update({ region: process.env.S3_REGION })
-const s3 = new AWS.S3({ apiVersion: '2006-03-01' })
+
 const storage = multer.diskStorage({
   destination: function (req, file, callback) {
     callback(null, 'temp/');
@@ -14,10 +10,9 @@ const storage = multer.diskStorage({
     callback(null, file.originalname); 
   }
 })
-const upload = multer({ storage: storage });
-//const fetch = require("node-fetch"); 
 
-var uploadParams = { Bucket: process.env.S3_BUCKET, Key: "", Body: "" };
+const upload = multer({ storage: storage });
+var loggedIn = false;
 
 // login page
 app.get("/login", (req, res) => {
@@ -38,7 +33,7 @@ app.get("/login", (req, res) => {
 });
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // To parse URL-encoded data
+app.use(express.urlencoded({ extended: true }));
 
 // login request
 app.post("/api/login", async (req, res) => {
@@ -51,6 +46,7 @@ app.post("/api/login", async (req, res) => {
     });
 
     if (response.ok) {
+      loggedIn = true;
       return res.redirect("/");
     } else {
       return res.send("Invalid credentials. Please try again.");
@@ -62,29 +58,42 @@ app.post("/api/login", async (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  res.send(`
-    <h2>File Upload With <code>"Node.js"</code></h2>
-    <form action="/api/upload" enctype="multipart/form-data" method="post">
-      <div>Select a file: 
-        <input name="file" type="file" />
-      </div>
-      <input type="submit" value="Upload" />
-    </form>
-  `);
+  if (loggedIn == false) {
+    return res.redirect("/login");
+  } else {
+    res.send(`
+      <h2>File Upload With <code>"Node.js"</code></h2>
+      <form action="/api/upload" enctype="multipart/form-data" method="post">
+        <div>Select a file: 
+          <input name="file" type="file" />
+        </div>
+        <input type="submit" value="Upload" />
+      </form>
+      <br>
+      <form action="/logout" method="post">
+        <input type="submit" value="Logout" />
+      </form>
+    `);
+  }
 });
 
 app.post('/api/upload', upload.single('file'), (req, res) => {
     try {
-        res.send('Succesfully uploaded');
+        res.send('Successfully uploaded');
         console.log(req.file.originalname);
-        const response = fetch("http://file-svc:4000/api/upload", {
+        fetch("http://file-svc:4000/api/upload", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ filePath: 'temp/'+req.file.originalname }),
         });
-    }catch(err) {
+    } catch(err) {
         res.send(400);
     }
+});
+
+app.post('/logout', (req, res) => {
+  loggedIn = false;
+  res.redirect('/login');
 });
 
 app.listen(3000, () => console.log('server ready'))
