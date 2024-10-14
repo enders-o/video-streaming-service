@@ -77,8 +77,8 @@ app.get('/', (req, res) => {
   }
 });
 
-app.post('/api/upload', upload.single('file'), (req, res) => {
-    try {
+app.post('/api/upload', upload.single('file'), (req, res) => {  
+  try {
         res.send('Successfully uploaded');
         console.log(req.file.originalname);
         fetch("http://file-svc:4000/api/upload", {
