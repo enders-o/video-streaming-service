@@ -16,6 +16,7 @@ app.post('/api/upload', (req, res) => {
     fs.readFile(req.body.filePath, (err, data) => {
         // Display the file content
         console.log(data);
+        console.log(uploadParams);
         uploadParams.Key = req.body.fileName;
         uploadParams.Body = data;
         s3.upload(uploadParams, (err,data) => {

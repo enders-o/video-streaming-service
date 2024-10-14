@@ -84,7 +84,7 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
         fetch("http://file-svc:4000/api/upload", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ filePath: 'temp/'+req.file.originalname }),
+            body: JSON.stringify({ fileName: req.file.originalname, filePath: 'temp/'+req.file.originalname }),
         });
     } catch(err) {
         res.send(400);
