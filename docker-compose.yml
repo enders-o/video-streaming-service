@@ -19,6 +19,8 @@ services:
       - "8000:8000"
     networks:
       - bridge-net
+    env_file:
+      - .env
   
   file-svc:
     build:
@@ -29,6 +31,8 @@ services:
       - myapp-temp:/usr/src/app/temp
     networks:
       - bridge-net
+    env_file:
+      - .env
   streaming-svc:
     build:
       context: ./streaming-webapp
@@ -36,11 +40,13 @@ services:
       - "3100:3100"
     networks:
       - bridge-net
+    env_file:
+      - .env
   database:
     image: mariadb:10.5
     container_name: mariadb_container
     environment:
-      MYSQL_ROOT_PASSWORD: password 
+      MYSQL_ROOT_PASSWORD: ${DB_PASS} 
       MYSQL_DATABASE: video_db
       MYSQL_USER: user 
       MYSQL_PASSWORD: password 
