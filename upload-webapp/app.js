@@ -1,5 +1,6 @@
 const express = require("express")
 const multer = require('multer')
+const mariadb = require('mariadb');
 const app = express()
 
 const storage = multer.diskStorage({
@@ -10,6 +11,33 @@ const storage = multer.diskStorage({
     callback(null, file.originalname); 
   }
 })
+
+const pool = mariadb.createPool({
+    host: 'database', 
+    user: process.env.DB_USER, 
+    password: process.env.DB_PASS,
+    database: 'video_db',
+    connectionLimit: 5
+});
+
+async function saveVideoDetails(videoName, filePath) {
+  const query = 'INSERT INTO videos (video_name, file_path) VALUES (?, ?)';
+  
+  let conn;
+  try {
+      conn = await pool.getConnection(); 
+      const [results] = await conn.query(query, [videoName, filePath]);
+      console.log('Video details saved successfully:', results);
+      return results;
+  } catch (err) {
+      console.error('Error saving video details:', err);
+      throw err;
+  } finally {
+      if (conn) conn.release();
+  }
+}
+
+
 
 const upload = multer({ storage: storage });
 var loggedIn = false;
@@ -77,17 +105,25 @@ app.get('/', (req, res) => {
   }
 });
 
-app.post('/api/upload', upload.single('file'), (req, res) => {  
+app.post('/api/upload', upload.single('file'), async (req, res) => {  
   try {
+    const videoName = req.file.originalname
+
         res.send('Successfully uploaded');
         console.log(req.file.originalname);
-        fetch("http://file-svc:4000/api/upload", {
+        const response = await fetch("http://file-svc:4000/api/upload", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ fileName: req.file.originalname, filePath: 'temp/'+req.file.originalname }),
         });
+
+        const responseData = await response.json();
+        const s3Url = responseData.s3Url;
+
+        await saveVideoDetails(videoName, s3Url)
+
     } catch(err) {
-        res.send(400);
+        res.sendStatus(400);
     }
 });
 

@@ -28,13 +28,16 @@ app.post('/api/upload', (req, res) => {
                 return res.status(500).send('Error uploading file');
             }
             console.log('success')
+
             fs.unlink(req.body.filePath, (err) => {
                 if (err) throw err;
                 console.log(req.body.filePath + ' was deleted');
+
+                res.status(200).json({s3Url:data.Location})
             });
         });
     });
-    res.status(200).send('File uploaded and deleted successfully');
+    //res.status(200).send('File uploaded and deleted successfully');
 });
 
 app.listen(4000, () => console.log('server ready'))
