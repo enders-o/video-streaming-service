@@ -95,19 +95,7 @@ app.get('/', (req, res) => {
   if (loggedIn == false) {
     return res.redirect("/login");
   } else {
-    res.send(`
-      <h2>File Upload With <code>"Node.js"</code></h2>
-      <form action="/api/upload" enctype="multipart/form-data" method="post">
-        <div>Select a file: 
-          <input name="file" type="file" />
-        </div>
-        <input type="submit" value="Upload" />
-      </form>
-      <br>
-      <form action="/logout" method="post">
-        <input type="submit" value="Logout" />
-      </form>
-    `);
+    res.sendFile('/usr/src/app/upload.html')
   }
 });
 
@@ -124,7 +112,7 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
       const videoPath = `s3://${process.env.S3_BUCKET}/${videoName}`;
       await saveVideoDetails(videoName, videoPath);
 
-      res.send('Successfully uploaded');
+      res.sendFile('/usr/src/app/upload-success.html')
 
 
 

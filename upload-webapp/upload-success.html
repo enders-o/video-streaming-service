@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Successful</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+        }
+        .success-icon {
+            color: #4CAF50;
+            font-size: 48px;
+        }
+        .button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="success-icon">✓</div>
+        <h1>Upload Successful</h1>
+        <p>Your file has been successfully uploaded. It may take some time for the file to be fully processed and available.</p>
+        <button class="button" onclick="window.location.href='http://localhost:3000/'">Upload Another Video</button>
+        <button class="button" onclick="window.location.href='http://localhost:3100/paths'">Video Directory</button>
+        <!-- <button class="button" onclick="window.location.href='http://localhost:3100/video?name=${name}'">View Uploaded Video</button>-->
+    </div>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const name = urlParams.get('name');
+    </script>
+
+</body>
+</html>
