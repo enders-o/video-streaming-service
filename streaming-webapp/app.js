@@ -62,9 +62,6 @@ app.get('/video', async (req, res) => {
     }
     const videoName = req.query.name ;
     try {
-        // retrieve video from s3 and download it to temp videos folder
-        //res.status(200).send('get video');
-        //const stat = fs.statSync(videoPath);
         // get file size from s3
         const headParams = {
             Bucket: process.env.S3_BUCKET,
@@ -110,9 +107,6 @@ app.get('/video', async (req, res) => {
             res.writeHead(200, head);
             const stream = s3.getObject(streamParams).createReadStream();
             stream.pipe(res)
-            //fs.createReadStream(videoPath).pipe(res);
-            //var file = require('fs').createWriteStream('/path/to/file.jpg');
-            //s3.getObject(params).createReadStream().pipe(file);
         }
     } catch (err) {
         console.error('Error fetching videos:', err);
