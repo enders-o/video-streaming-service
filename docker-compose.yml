@@ -48,8 +48,6 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASS} 
       MYSQL_DATABASE: video_db
-      MYSQL_USER: user 
-      MYSQL_PASSWORD: password 
     volumes:
       - ./mariadb_data:/var/lib/mysql
       - ./database:/docker-entrypoint-initdb.d
