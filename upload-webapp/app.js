@@ -1,7 +1,9 @@
 const express = require("express")
 const multer = require('multer')
 const mariadb = require('mariadb');
+require('dotenv').config({});
 const app = express()
+console.log(process.env);
 
 const storage = multer.diskStorage({
   destination: function (req, file, callback) {
@@ -12,29 +14,33 @@ const storage = multer.diskStorage({
   }
 })
 
+
 const pool = mariadb.createPool({
     host: 'database', 
-    user: process.env.DB_USER, 
-    password: process.env.DB_PASS,
+    user: 'root', 
+    password: 'password',
     database: 'video_db',
     connectionLimit: 5
 });
 
 async function saveVideoDetails(videoName, filePath) {
-  const query = 'INSERT INTO videos (video_name, file_path) VALUES (?, ?)';
-  
-  let conn;
-  try {
-      conn = await pool.getConnection(); 
-      const [results] = await conn.query(query, [videoName, filePath]);
-      console.log('Video details saved successfully:', results);
-      return results;
-  } catch (err) {
-      console.error('Error saving video details:', err);
-      throw err;
-  } finally {
-      if (conn) conn.release();
-  }
+    const query = 'INSERT INTO videos (video_name, video_path) VALUES (?, ?)';
+
+    console.log(videoName)
+    console.log(filePath)
+
+    let conn;
+    try {
+        conn = await pool.getConnection(); 
+        const results = await conn.query(query, [videoName, filePath]);
+        console.log('Video details saved successfully:', results);
+        return results;
+    } catch (err) {
+        console.error('Error saving video details:', err);
+        throw err;
+    } finally {
+        if (conn) conn.release();
+    }
 }
 
 
@@ -107,20 +113,20 @@ app.get('/', (req, res) => {
 
 app.post('/api/upload', upload.single('file'), async (req, res) => {  
   try {
-    const videoName = req.file.originalname
+      const videoName = req.file.originalname
 
-        res.send('Successfully uploaded');
-        console.log(req.file.originalname);
-        const response = await fetch("http://file-svc:4000/api/upload", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ fileName: req.file.originalname, filePath: 'temp/'+req.file.originalname }),
-        });
+      console.log(req.file.originalname);
+      await fetch("http://file-svc:4000/api/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fileName: req.file.originalname, filePath: 'temp/'+req.file.originalname }),
+      });
+      const videoPath = `s3://${process.env.S3_BUCKET}/${videoName}`;
+      await saveVideoDetails(videoName, videoPath);
 
-        const responseData = await response.json();
-        const s3Url = responseData.s3Url;
+      res.send('Successfully uploaded');
 
-        await saveVideoDetails(videoName, s3Url)
+
 
     } catch(err) {
         res.sendStatus(400);
