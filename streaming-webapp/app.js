@@ -62,51 +62,29 @@ app.get('/video', async (req, res) => {
     }
     const videoName = req.query.name ;
     try {
-        // get file size from s3
-        const headParams = {
-            Bucket: process.env.S3_BUCKET,
-            Key: videoName
-        };
+        const response = await fetch("http://file-svc:4000/api/download", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Range": req.headers.range || "" },
+            body: JSON.stringify({ name: videoName }),
+        });
+        if (response.ok) {
+            // Forward the headers from file-svc to the client
+            const headers = {};
+            response.headers.forEach((value, key) => {
+                headers[key] = value;
+            });
 
-        const headData = await s3.headObject(headParams).promise();
-        const fileSize = headData.ContentLength;
-        const range = req.headers.range;
+            // Write the headers to the response
+            res.writeHead(response.status, headers);
 
-        if (range) {
-            const parts = range.replace(/bytes=/, '').split('-');
-            const start = parseInt(parts[0], 10);
-            const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
-            const chunkSize = end - start + 1;
-            //const file = fs.createReadStream(videoPath, { start, end });
-            const head = {
-                'Content-Range': `bytes ${start}-${end}/${fileSize}`,
-                'Accept-Ranges': 'bytes',
-                'Content-Length': chunkSize,
-                'Content-Type': 'video/mp4',
-            };
-            const streamParams = {
-                Bucket: process.env.S3_BUCKET,
-                Key: videoName,
-                Range: `bytes=${start}-${end}`
-            };
-            const stream = s3.getObject(streamParams).createReadStream();
-
-            res.writeHead(206, head);
-            stream.pipe(res)
-            //file.pipe(res);
+            // Pipe the video stream from file-svc to the client
+            //response.body.pipe(res);
+            for await (const chunk of response.body) {
+                    res.write(chunk);
+                }
+            res.end(); 
         } else {
-            const head = {
-                'Content-Length': fileSize,
-                'Content-Type': 'video/mp4',
-            };
-            const streamParams = {
-                Bucket: process.env.S3_BUCKET,
-                Key: videoName,
-            };
-
-            res.writeHead(200, head);
-            const stream = s3.getObject(streamParams).createReadStream();
-            stream.pipe(res)
+            res.status(response.status).send('Failed to fetch video from file service');
         }
     } catch (err) {
         console.error('Error fetching videos:', err);
