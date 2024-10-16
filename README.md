@@ -106,10 +106,8 @@ AUTH_PASSWORD= # The password that the authentication service will use to authen
 ## upload-webapp - Upload Video (Web)
 - Programming language: **Node.js**
 - Web application framework: **Express.js**
-    - users must validate credentials first (send request to auth service)
-    - upload video (mp4) file - streams
-    - video name and path are written to mysql service
-    - the file itself is written to a file storage through the file system service - to s3
+
+The upload web application service is a node and express js microservice responsible for allowing users to upload videos, that they can later view. It utilizes multer to store uploaded files in a temp folder. Once a user uploads a video it sends a request to the file-svc with the path to the file in the temp folder for the file-svc to upload to S3. It also stores the name and S3 path to the SQL database. After the user uploads a video it should show a success page. Utilizes the auth-svc for authentication.
 
 ## streaming-webapp - Video Streaming (Web)
 - Programming language: **Node.js**
@@ -117,7 +115,8 @@ AUTH_PASSWORD= # The password that the authentication service will use to authen
     - users must validate credentials first (send request to auth service)
     - list of videos and paths are taken from db service 
     - video itself is taken from file system service - retreive from s3
-    - aws s3 hls
+
+The streaming web application service is a node and express js microservice responsible for allowing users to view all videos stored, and view selected videos. The lists of videos and paths are read from the database service and displayed to the user in a list view. If a user clicks on video, the streaming web app makes a request to file-svc for the video requested, then file-svc responds with the selected video, which is then displayed to the user.
 
 ## auth-svc - Authentication Service
 - Programming language: **Python**
@@ -155,6 +154,8 @@ The Authentication Service is a Flask-based microservice responsible for managin
 - Web application framework: **Express.js**
     - Upload endpoint /api/upload - Uploads file from local to s3 and deletes the local file
     - Download endpoint /api/download - Streams video content from s3
+
+The file system service is a node and express js microservice responsible for storing uploaded files to S3 and retrieving requested files from S3. When a user uploads a file, it recieves the path to that file in a local temporary directory. It then reads the file and uploads it to S3. After uploading the file it deletes the temporary file as it's no longer needed. When a user requests a video to view, it recieves the name of the video, which should correspond to a key in your S3 bucket. It then retrieves the file from the S3 bucket and responds with data in that file.
 
 ## database - Database Service
 - Programming language: **SQL**
