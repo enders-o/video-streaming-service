@@ -160,7 +160,12 @@ The file system service is a node and express js microservice responsible for st
 ## database - Database Service
 - Programming language: **SQL**
 - Database: **MariaDB**
+    - MariaDB used as an alternative to MySQL for MacOS
     - Columns: video_name and video_path
+    - video_name is the name of the video
     - video_path is the corresponding url of the s3bucket
     - Writes to db once video is uploaded
-    - MariaDB used as an alternative to MySQL for MacOS
+  
+The database service uses MariaDB to store the video name and url of an uploaded video. The name and url are attached to an INT primary key. When the upload service is called, it writes the name and url to the s3 bucket to the database. Then, once the streaming service is called, it requests the stored name and associated url from the database.
+  
+
