@@ -2,15 +2,16 @@ const fs = require('fs')
 const express = require("express")
 const app = express()
 app.use(express.json());
-
 const AWS = require("aws-sdk")
 require('dotenv').config();
 AWS.config.update({ region: process.env.S3_REGION })
 const s3 = new AWS.S3({ apiVersion: '2006-03-01' })
 
+
 var uploadParams = { Bucket: process.env.S3_BUCKET, Key: "", Body: "" };
 
 app.post('/api/upload', (req, res) => {
+    
     console.log(req.body.filePath)
     fs.readFile(req.body.filePath, (err, data) => {
         // Display the file content

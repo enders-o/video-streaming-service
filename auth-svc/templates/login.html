@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+</head>
+<body>
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+    <h2>Login Page</h2>
+    <form action="/api/login" method="post">
+        <div>
+            <label for="username">Username:</label>
+            <input name="username" type="text" required />
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input name="password" type="password" required />
+        </div>
+        <input type="hidden" name="redirect" value="{{ redirect_url }}" />
+        <p>You will be redirected to: {{ redirect_url }}</p>
+        <input type="submit" value="Login" />
+    </form>
+</body>
+</html>

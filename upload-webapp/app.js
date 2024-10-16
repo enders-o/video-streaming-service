@@ -48,7 +48,6 @@ async function saveVideoDetails(videoName, filePath) {
 
 
 const upload = multer({ storage: storage });
-var loggedIn = false;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

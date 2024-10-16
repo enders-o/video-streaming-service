@@ -2,13 +2,14 @@ const express = require("express")
 const fs = require('fs')
 const app = express()
 require('dotenv').config();
+const cookieParser = require("cookie-parser");
 
 const AWS = require("aws-sdk")
 require('dotenv').config();
 AWS.config.update({ region: process.env.S3_REGION })
 const s3 = new AWS.S3({ apiVersion: '2006-03-01' })
 
-var loggedIn = false;
+app.use(cookieParser());
 
 const mariadb = require('mariadb');
 
@@ -37,9 +38,12 @@ async function connectToDB() {
 
 
 app.get('/paths', async (req, res) => {
-    if (loggedIn == false) {
-        return res.redirect("/login");
+    const authToken = req.cookies.auth_token;
+    if (!authToken) {
+      var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+      return res.redirect(`http://localhost:8000/login?redirect=${fullUrl}`);
     }
+
     try {
         const query = await connectToDB();
         let htmlContent = '<h1>Select a video to watch</h1><ul>';
@@ -57,9 +61,12 @@ app.get('/paths', async (req, res) => {
 })
 //https://medium.com/@developerom/playing-video-from-server-using-node-js-d52e1687e378
 app.get('/video', async (req, res) => {
-    if (loggedIn == false) {
-        return res.redirect("/login");
+    const authToken = req.cookies.auth_token;
+    if (!authToken) {
+      var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+      return res.redirect(`http://localhost:8000/login?redirect=${fullUrl}`);
     }
+
     const videoName = req.query.name ;
     try {
         const response = await fetch("http://file-svc:4000/api/download", {
@@ -114,25 +121,25 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // login request
-app.post("/api/login", async (req, res) => {
-const { username, password } = req.body;
-try {
-    const response = await fetch("http://auth-svc:8000/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password }),
-    });
+// app.post("/api/login", async (req, res) => {
+// const { username, password } = req.body;
+// try {
+//     const response = await fetch("http://auth-svc:8000/login", {
+//     method: "POST",
+//     headers: { "Content-Type": "application/json" },
+//     body: JSON.stringify({ username, password }),
+//     });
 
-    if (response.ok) {
-    loggedIn = true;
-    return res.redirect("/paths");
-    } else {
-    return res.send("Invalid credentials. Please try again.");
-    }
-} catch (error) {
-    console.error(error);
-    return res.status(500).send("Error communicating with auth service");
-}
-});
+//     if (response.ok) {
+//     loggedIn = true;
+//     return res.redirect("/paths");
+//     } else {
+//     return res.send("Invalid credentials. Please try again.");
+//     }
+// } catch (error) {
+//     console.error(error);
+//     return res.status(500).send("Error communicating with auth service");
+// }
+// });
 
 app.listen(3100, () => console.log('server ready'))
