@@ -1,6 +1,7 @@
 const express = require("express")
 const multer = require('multer')
 const mariadb = require('mariadb');
+const cookieParser = require("cookie-parser");
 require('dotenv').config({});
 const app = express()
 console.log(process.env);
@@ -14,6 +15,7 @@ const storage = multer.diskStorage({
   }
 })
 
+app.use(cookieParser());
 
 const pool = mariadb.createPool({
     host: 'database', 
@@ -48,55 +50,39 @@ async function saveVideoDetails(videoName, filePath) {
 const upload = multer({ storage: storage });
 var loggedIn = false;
 
-// login page
-app.get("/login", (req, res) => {
-  res.send(`
-    <h2>Login Page</h2>
-    <form action="/api/login" method="post">
-      <div>
-        <label for="username">Username:</label>
-        <input name="username" type="text" required />
-      </div>
-      <div>
-        <label for="password">Password:</label>
-        <input name="password" type="password" required />
-      </div>
-      <input type="submit" value="Login" />
-    </form>
-  `);
-});
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// login request
-app.post("/api/login", async (req, res) => {
-  const { username, password } = req.body;
-  try {
-    const response = await fetch("http://auth-svc:8000/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
+// Login request from the form on the authentication service
+// app.post("/api/login", async (req, res) => {
+//   const { username, password } = req.body;
+  
+//   try {
+//     const response = await fetch("http://localhost:8000/api/login", {
+//       method: "POST",
+//       headers: { "Content-Type": "application/x-www-form-urlencoded" },
+//       body: `username=${username}&password=${password}`
+//     });
 
-    if (response.ok) {
-      loggedIn = true;
-      return res.redirect("/");
-    } else {
-      return res.send("Invalid credentials. Please try again.");
-    }
-  } catch (error) {
-    console.error(error);
-    return res.status(500).send("Error communicating with auth service");
-  }
-});
+//     if (response.ok) {
+//       loggedIn = true;
+//       return res.redirect("/");
+//     } else {
+//       return res.send("Invalid credentials. Please try again.");
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).send("Error communicating with auth service");
+//   }
+// });
 
 app.get('/', (req, res) => {
-  if (loggedIn == false) {
-    return res.redirect("/login");
-  } else {
+    const authToken = req.cookies.auth_token;
+    if (!authToken) {
+      var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+      return res.redirect(`http://localhost:8000/login?redirect=${fullUrl}`);
+    }
     res.sendFile('/usr/src/app/upload.html')
-  }
 });
 
 app.post('/api/upload', upload.single('file'), async (req, res) => {  
