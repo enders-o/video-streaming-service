@@ -129,7 +129,7 @@ The Authentication Service is a Flask-based microservice responsible for managin
 - Parameters:
     - `redirect`: A URL to redirect the user after successful login.
 
-#### Login Page Route
+#### Login API Route
 - Method: `POST`
 - Description: Validates user credentials against stored environment variables. If valid, sets an authentication cookie and redirects the user to the URL specified in `redirect`.
 - Parameters:
