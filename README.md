@@ -153,8 +153,8 @@ The Authentication Service is a Flask-based microservice responsible for managin
 ## file-svc - File System Service
 - Programming language: **Node.js**
 - Web application framework: **Express.js**
-    - Read/write files from a file storage (local/cloud)
-    - In this case it will be an S3 bucket
+    - Upload endpoint /api/upload - Uploads file from local to s3 and deletes the local file
+    - Download endpoint /api/download - Streams video content from s3
 
 ## database - Database Service
 - Programming language: **SQL**
