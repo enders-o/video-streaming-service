@@ -18,6 +18,8 @@
   - `myapp-temp:/usr/src/app/temp`: Temporary storage for file uploads.
 - **Networks**: 
   - `bridge-net`: Internal network for inter-service communication.
+- **Environment Variables**: 
+  - Loaded from `.env` file.
 
 #### 2. Authentication Service (`auth-svc`)
 

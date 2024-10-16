@@ -19,11 +19,11 @@ const storage = multer.diskStorage({
 app.use(cookieParser());
 
 const pool = mariadb.createPool({
-    host: 'database', 
-    user: 'root', 
-    password: 'password',
-    database: 'video_db',
-    connectionLimit: 5
+  host: 'database', 
+  user: process.env.DB_USER, 
+  password: process.env.DB_PASS,
+  database: 'video_db',
+  connectionLimit: 5
 });
 
 function renderHtmlWithNav(filePath) {
