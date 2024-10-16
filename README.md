@@ -159,5 +159,7 @@ The Authentication Service is a Flask-based microservice responsible for managin
 ## database - Database Service
 - Programming language: **SQL**
 - Database: **MariaDB**
-    - List of videos and their corresponding path/url
+    - Columns: video_name and video_path
+    - video_path is the corresponding url of the s3bucket
+    - Writes to db once video is uploaded
     - MariaDB used as an alternative to MySQL for MacOS
