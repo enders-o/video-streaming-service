@@ -69,9 +69,11 @@
         <ul>
             <li><a onclick="window.location.href='http://localhost:3000/'">Upload Video</a></li>
             <li><a onclick="window.location.href='http://localhost:3100/paths'">Video Directory</a></li>
-            <!--
-                <li class="logout"><a onclick="window.location.href='http://localhost:3000/logout'">Log Out</a></li>
-            -->
+            <li>
+                <form action="http://localhost:8000/api/logout" method="POST">
+                    <button type="submit">Logout</button>
+                </form>
+            </li>
         </ul>
     </nav>
     <ul id="video-list">

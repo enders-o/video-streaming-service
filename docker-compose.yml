@@ -41,6 +41,9 @@ services:
       context: ./streaming-webapp
     ports:
       - "3100:3100"
+    depends_on:
+      - auth-svc
+      - file-svc
     networks:
       - bridge-net
     env_file:

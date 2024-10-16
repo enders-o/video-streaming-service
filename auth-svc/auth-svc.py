@@ -13,6 +13,8 @@ PASSWORD = os.getenv("AUTH_PASSWORD")
 def login_page():
     # Extract the redirect URL from the query parameters
     redirect_url = request.args.get('redirect') 
+    if not redirect_url:
+        redirect_url = 'http://localhost:3000/'
 
     # Render the login page with the redirect URL as a hidden input
     return render_template('login.html', redirect_url=redirect_url)
