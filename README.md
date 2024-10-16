@@ -54,6 +54,9 @@
 - **Ports**: 
   - Host: `3100`
   - Container: `3100`
+- **Dependencies**: 
+  - `auth-svc`: Authentication Service
+  - `file-svc`: File System Service
 - **Networks**: 
   - `bridge-net`
 - **Environment Variables**: 
