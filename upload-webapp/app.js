@@ -2,6 +2,7 @@ const express = require("express")
 const multer = require('multer')
 const mariadb = require('mariadb');
 const cookieParser = require("cookie-parser");
+const fs = require('fs');
 require('dotenv').config({});
 const app = express()
 console.log(process.env);
@@ -24,6 +25,14 @@ const pool = mariadb.createPool({
     database: 'video_db',
     connectionLimit: 5
 });
+
+function renderHtmlWithNav(filePath) {
+    const nav = fs.readFileSync('nav.html', 'utf8');
+    let content = fs.readFileSync(filePath, 'utf8');
+    content = content.replace('<!-- NAV_PLACEHOLDER -->', nav);
+    return content;
+}
+
 
 async function saveVideoDetails(videoName, filePath) {
     const query = 'INSERT INTO videos (video_name, video_path) VALUES (?, ?)';
@@ -78,10 +87,11 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/', (req, res) => {
     const authToken = req.cookies.auth_token;
     if (!authToken) {
-      var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-      return res.redirect(`http://localhost:8000/login?redirect=${fullUrl}`);
+        var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+        return res.redirect(`http://localhost:8000/login?redirect=${fullUrl}`);
     }
-    res.sendFile('/usr/src/app/upload.html')
+    const content = renderHtmlWithNav('upload.html');
+    res.send(content);
 });
 
 app.post('/api/upload', upload.single('file'), async (req, res) => {  
@@ -97,9 +107,10 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
       const videoPath = `s3://${process.env.S3_BUCKET}/${videoName}`;
       await saveVideoDetails(videoName, videoPath);
 
-      res.sendFile('/usr/src/app/upload-success.html')
 
-
+      const content = renderHtmlWithNav('upload-success.html');
+      res.send(content);
+      //res.sendFile('/usr/src/app/upload-success.html')
 
     } catch(err) {
         res.sendStatus(400);

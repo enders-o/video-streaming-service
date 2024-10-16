@@ -46,14 +46,21 @@ app.get('/paths', async (req, res) => {
 
     try {
         const query = await connectToDB();
-        let htmlContent = '<h1>Select a video to watch</h1><ul>';
-        query.forEach(video => {
-            htmlContent += `<li><a href="/video?name=${encodeURIComponent(video.video_name)}">${video.video_name}</a></li>`;
-        });
-        htmlContent += '</ul>';
+        fs.readFile('index.html', 'utf-8', (err, data) => {
+            if (err) {
+                console.error("Error fetching the file:", err);
+                return;
+            }
+            let htmlContent = data;
+            // Do something with htmlContent
+            const listItems = query.map(video => 
+                `<li><a href="/video?name=${encodeURIComponent(video.video_name)}">${video.video_name}</a></li>`
+            ).join('');
+            htmlContent = htmlContent.replace('<!-- Video list items will be inserted here -->', listItems);
 
-        // Send the generated HTML as the response
-        res.send(htmlContent);
+            // Send the generated HTML as the response
+            res.send(htmlContent);
+        });
     } catch (err) {
         console.error('Error fetching videos:', err);
         res.status(500).send('Internal Server Error'); // Send an error response
