@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-svc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-svc
+  template:
+    metadata:
+      labels:
+        app: auth-svc
+    spec:
+      containers:
+      - name: auth-svc
+        image: timurreziapov/auth-svc:latest
+        env:
+        - name: AUTH_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: app-configmap
+              key: AUTH_USERNAME
+        - name: AUTH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: app-secret
+              key: AUTH_PASSWORD
+        ports:
+        - containerPort: 8000
