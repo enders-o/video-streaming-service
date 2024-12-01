@@ -2,3 +2,4 @@
 node_modules
 mariadb_data/
 temp
+app-secret.yaml

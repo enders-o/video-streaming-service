@@ -13,7 +13,7 @@ services:
       - bridge-net
     env_file:
       - .env
-  
+
   auth-svc:
     build:
       context: ./auth-svc
@@ -23,7 +23,7 @@ services:
       - bridge-net
     env_file:
       - .env
-  
+
   file-svc:
     build:
       context: ./file-svc
@@ -53,14 +53,14 @@ services:
     image: mariadb:10.5
     container_name: mariadb_container
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASS} 
+      MYSQL_ROOT_PASSWORD: ${DB_PASS}
       MYSQL_DATABASE: video_db
     volumes:
-      - ./mariadb_data:/var/lib/mysql
+      - mariadb_data:/var/lib/mysql
       - ./database:/docker-entrypoint-initdb.d
     ports:
       - "3306:3306"
-    networks: 
+    networks:
       - bridge-net
 
 networks:
@@ -70,3 +70,4 @@ networks:
 volumes:
   myapp-temp:
     external: false
+  mariadb_data:
