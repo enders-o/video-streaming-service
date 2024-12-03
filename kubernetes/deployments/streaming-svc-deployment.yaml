@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: streaming-svc
+spec:
+  selector:
+    matchLabels:
+      app: streaming-svc
+  template:
+    metadata:
+      labels:
+        app: streaming-svc
+    spec:
+      containers:
+      - name: streaming-svc
+        image: enderso/streaming-webapp:latest
+        ports:
+        - containerPort: 3100
+        envFrom:
+        - configMapRef:
+            name: app-configmap

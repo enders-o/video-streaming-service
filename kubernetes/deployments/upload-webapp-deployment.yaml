@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: upload-webapp
+spec:
+  selector:
+    matchLabels:
+      app: upload-webapp
+  template:
+    metadata:
+      labels:
+        app: upload-webapp
+    spec:
+      containers:
+      - name: upload-webapp
+        image: enderso/upload-webapp:latest
+        ports:
+        - containerPort: 3000
+        envFrom:
+        - configMapRef:
+            name: app-configmap
+        volumeMounts:
+        - name: temp-storage
+          mountPath: /usr/src/app/temp
+      volumes:
+      - name: temp-storage
+        emptyDir: {}

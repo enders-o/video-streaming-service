@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: file-svc
+spec:
+  selector:
+    matchLabels:
+      app: file-svc
+  template:
+    metadata:
+      labels:
+        app: file-svc
+    spec:
+      containers:
+      - name: file-svc
+        image: enderso/file-svc:latest
+        ports:
+        - containerPort: 4000
+        envFrom:
+        - configMapRef:
+            name: app-config
+        volumeMounts:
+        - name: temp-storage
+          mountPath: /usr/src/app/temp
+      volumes:
+      - name: temp-storage
+        emptyDir: {}
