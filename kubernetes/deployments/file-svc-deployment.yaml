@@ -18,10 +18,11 @@ spec:
         - containerPort: 4000
         envFrom:
         - configMapRef:
-            name: app-config
+            name: app-configmap
         volumeMounts:
-        - name: temp-storage
+        - name: storage-temp-pv
           mountPath: /usr/src/app/temp
       volumes:
-      - name: temp-storage
-        emptyDir: {}
+        - name: storage-temp-pv
+          persistentVolumeClaim:
+            claimName: storage-temp-pvc
