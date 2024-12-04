@@ -16,9 +16,27 @@ spec:
         image: enderso/file-svc:latest
         ports:
         - containerPort: 4000
-        envFrom:
-        - configMapRef:
-            name: app-configmap
+        env:
+          - name: S3_REGION
+            valueFrom:
+              secretKeyRef:
+                name: app-configmap 
+                key: S3_REGION
+          - name: S3_BUCKET           
+            valueFrom:
+              configMapKeyRef:
+                name: app-configmap  
+                key: S3_BUCKET
+          - name: AWS_ACCESS_KEY_ID
+            valuesFrom:
+              secretKeyRef:
+                name: app-secret
+                key: AWS_ACCESS_KEY_ID
+          - name: AWS_SECRET_ACCESS_KEY
+            valuesFrom:
+              secretKeyRef:
+                name: app-secret
+                key: AWS_SECRET_ACCESS_KEY
         volumeMounts:
         - name: storage-temp-pv
           mountPath: /usr/src/app/temp
