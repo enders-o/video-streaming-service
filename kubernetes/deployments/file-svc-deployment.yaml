@@ -19,7 +19,7 @@ spec:
         env:
           - name: S3_REGION
             valueFrom:
-              secretKeyRef:
+              configMapKeyRef:
                 name: app-configmap 
                 key: S3_REGION
           - name: S3_BUCKET           
@@ -28,12 +28,12 @@ spec:
                 name: app-configmap  
                 key: S3_BUCKET
           - name: AWS_ACCESS_KEY_ID
-            valuesFrom:
+            valueFrom:
               secretKeyRef:
                 name: app-secret
                 key: AWS_ACCESS_KEY_ID
           - name: AWS_SECRET_ACCESS_KEY
-            valuesFrom:
+            valueFrom:
               secretKeyRef:
                 name: app-secret
                 key: AWS_SECRET_ACCESS_KEY
